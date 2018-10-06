@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>360</x>
+      <y>70</y>
+      <w>270</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Archivo_Configuracion
+Contiene la configuracion del programa
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>660</x>
+      <y>80</y>
+      <w>310</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Archivo_Logs
+Contiene las paginas recorridas por el Crawler
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>140</x>
+      <y>640</y>
+      <w>300</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>Menu
+--
+__titulo__: str
+__opciones__: dict
+--
+Menu(self, titulo: str)
+--
+agregar_opcion(texto: str, valor: object): None
+obtener_eleccion(): object
+__mostrar_menu__(): None</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>430</y>
+      <w>30</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+m1=*
+
+</panel_attributes>
+    <additional_attributes>10.0;210.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>330</y>
+      <w>210</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>IndiceInvertido
+--
+
+--
+
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>250</y>
+      <w>310</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;utility&gt;&gt;
+Aplicacion
+--
+-configFile:configparser
+-indice: indiceInvertido
+--
+main():
+__iniciar_crawler__():None
+__realizar_busqueda__(): None
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>230</y>
+      <w>210</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Crawler
+--
+
+--
+Crawler(urls,logFile,tMin)
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>440</y>
+      <w>210</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Buscador
+--
+
+--
+
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
