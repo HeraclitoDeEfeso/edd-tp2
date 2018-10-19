@@ -1,0 +1,34 @@
+<diagram program="umletino" version="14.3.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>280</x><y>40</y><w>160</w><h>60</h></coordinates><panel_attributes>Crawler
+--
+procesadas: Direccion[0..*]
+sin_procesar: Direccion[0..*]
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>180</y><w>160</w><h>100</h></coordinates><panel_attributes>Control
+--
+map: (Time, Tokenizer)[1..n]
+reduce: Indexer[1..m]
+--
+agregar(Documento): None
+indexador(str): Indexer
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>350</y><w>160</w><h>50</h></coordinates><panel_attributes>Tokenizer
+--
+tokeniza(HtmlPage): str[0..*]
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>530</x><y>350</y><w>150</w><h>80</h></coordinates><panel_attributes>Indexer
+--
+rango: (chr, chr)
+index: BTree
+--
+indexar(str[1..*]): None
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>530</x><y>180</y><w>150</w><h>60</h></coordinates><panel_attributes>BTree
+--
+find(str): Direccion[1..*]
+add(str, Direccion): None
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>180</y><w>120</w><h>60</h></coordinates><panel_attributes>Documento
+--
+direccion: Direccion
+pagina: HTMLPage
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>40</y><w>100</w><h>40</h></coordinates><panel_attributes>&lt;&lt;Stereotype&gt;&gt;
+Direccion</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>350</y><w>240</w><h>80</h></coordinates><panel_attributes>Buscador
+--
+buscar(str): Direccion[0..*]
+busqueda_exclusiva(str[1..*]):Direccion[0..*]
+busqueda_inclusiva(str[1..*]):Direccion[0..*]</panel_attributes><additional_attributes></additional_attributes></element></diagram>
