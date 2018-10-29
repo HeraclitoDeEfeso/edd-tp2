@@ -1,6 +1,7 @@
 @startuml
 hide empty members
 hide circle
+scale max 1024 width
 namespace buscador {
     class Direccion {
     url: str
