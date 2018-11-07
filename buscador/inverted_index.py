@@ -15,12 +15,13 @@ class Control(object):
         self.documentos = []
         self.documentos_sin_procesar = []
 
-    def procesar_documento(self, documento):
+    def procesar_documento(self, direccion, contenido):
         """
-        Este es el método que llama el `Crawler` para que
-        el `Control` distribuya el trabajo que debe
-        realizarse sobre un documento recuperado
-        :param documento: `Documento` con la página recuperada
+        Este es el método que llama el `Crawler` para que el `Control`
+        distribuya el trabajo que debe realizarse sobre un documento
+        recuperado de la `direccion` y con el `contenido` de texto
+        :param direccion: una cadena de caracteres
+        :param contenido: una cadena de caracteres
         """
         pass
 
