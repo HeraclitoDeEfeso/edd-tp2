@@ -101,6 +101,8 @@ class Crawler(object):
         """
         El método que recupera los datos almacenados al detener el `Crawler`
         """
+        # TODO: Logueo y recuperación desde el logging
+        # Mientras tanto el Crawler comienza siempre desde cero
         self.direcciones_sin_procesar = self.dominios[:]
 
     def almacenar(self):
@@ -109,12 +111,14 @@ class Crawler(object):
         reiniciar el proceso donde se detuvo
         :return:
         """
+        # TODO: Persistencia del Crawler
         pass
 
     def registrar(self):
         """
         El método que registra un manejador para la señal de sistema CTRL-C
         """
+        # TODO: Captura de la interrupción por teclado
         pass
 
     def desregistrar(self):

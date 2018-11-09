@@ -1,56 +1,22 @@
+import re
 from buscador.btree import BTree
-class Control(object):
-    """
-    La clase `Control` sirve para representar el objeto que
-    distribuye el trabajo entre los documentos que obtiene
-    el `Crawler` los que son distribuidos a los `Tokenizer`
-    para obtener las palabras que luegos serán indexadas por
-    los `Indexer`
-    """
-    def __init__(self, separadores=None, indexadores=None):
-        # Mientras no implementemos las particiones
-        # utilizamos un solo tokenizer y un solo índice
-        self.map = separadores if separadores != None else Tokenizer()
-        self.reduce = indexadores if indexadores != None else Indexer()
-        self.documentos = []
-        self.documentos_sin_procesar = []
 
-    def procesar_documento(self, direccion, contenido):
-        """
-        Este es el método que llama el `Crawler` para que el `Control`
-        distribuya el trabajo que debe realizarse sobre un documento
-        recuperado de la `direccion` y con el `contenido` de texto
-        :param direccion: una cadena de caracteres
-        :param contenido: una cadena de caracteres
-        """
-        pass
-
-    def obtener_indice(self, palabra):
-        """
-        Este método es utilizado por el `Buscador` para
-        obtener el `Indexer` que debiera mantener el
-        índice invertido que contiene la `palabra`
-        :param palabra: un string con la palabra indexada
-        :return: el `Indexer` que mantiene el índice invertido
-        """
-        # Mientras no tengamos implementadas las particiones
-        # usamos un único índice
-        return self.reduce
 
 class Tokenizer(object):
     """
     Esta clase es la encargada de obtener las palabras de los
     documentos recuperados por el `Crawler`
     """
-    def obtener_palabras(self, documento):
+
+    def obtener_palabras(self, contenido):
         """
-        Este método devuelve una lista de palabras recuperadas
-        del `documento`
-        :param documento: un `Documento` ya recuperado por el `Crawler`
+        Este método devuelve una lista de palabras recuperadas del `contenido`
+        :param documento: una cadena con el contenido de texto del documento
         :return: una lista de cadenas de caracteres representando las palabras
         """
-        # Falta implementar el stemming y el filtro de palabras básicas
-        return documento.contenido.split(r'\W')
+        # TODO Falta implementar el stemming y el filtro de palabras básicas
+        return sorted(set(re.split(r'\W+', contenido)))
+
 
 class Indexer(object):
     """
@@ -58,24 +24,24 @@ class Indexer(object):
     las palabras encontradas en los documentos recuperados por el
     `Crawler`
     """
+
     def __init__(self):
         self.indice = BTree()
 
-    def agregar_palabra(self, palabra, documento):
+    def agregar_palabras(self, palabras, documento):
         """
-        Agrega la `palabra` al índice invertido con una referencia
-        al `documento`
-        :param palabra: una cadena de caracteres que representa una palabra
-        :param documento: una referencia al `Documento` que contenía la palabra
+        Agrega las `palabras` al índice invertido con una referencia al `documento`
+        :param palabras: una lista de cadenas de caracteres que representan palabras
+        :param documento: un número que referencia al documento que contenía las palabras
         """
-        self.indice.add(palabra, documento)
+        for palabra in palabras:
+            self.indice.add(palabra, documento)
 
     def obtener_documentos(self, palabra):
         """
-        Método que devuelve las referencias a los documentos que
-        contenienen la `palabra`
-        :param palabra: una cadena de caracteres que representa la palabara
-        :return: una lista de referencias de `Documento` que contienen la palabra
+        Método que devuelve las referencias a los documentos que contenienen la `palabra`
+        :param palabra: una cadena de caracteres que representa la palabra
+        :return: una lista de números como referencias a documentos
         """
         return self.indice.get(palabra)
 
@@ -96,3 +62,42 @@ class Indexer(object):
         :return: una lista con cadenas de caracters que representan cada palabra
         """
         pass
+
+
+class Control(object):
+    """
+    La clase `Control` sirve para representar el objeto que
+    distribuye el trabajo entre los documentos que obtiene
+    el `Crawler` los que son distribuidos a los `Tokenizer`
+    para obtener las palabras que luegos serán indexadas por
+    los `Indexer`
+    """
+
+    def __init__(self, separadores=None, indexadores=None):
+        # TODO: Particiones
+        # Mientras no implementemos las particiones utilizamos un tokenizer y un índice
+        self.map = separadores if separadores else Tokenizer()
+        self.reduce = indexadores if indexadores else Indexer()
+        self.documentos = []
+
+    def procesar_documento(self, direccion, contenido):
+        """
+        Este es el método que llama el `Crawler` para que el `Control`
+        distribuya el trabajo que debe realizarse sobre un documento
+        recuperado de la `direccion` y con el `contenido` de texto
+        :param direccion: una cadena de caracteres
+        :param contenido: una cadena de caracteres
+        """
+        self.documentos.append(direccion)
+        self.reduce.agregar_palabras(self.map.obtener_palabras(contenido), len(self.documentos) - 1)
+
+    def obtener_indice(self, palabra):
+        """
+        Este método es utilizado por el `Buscador` para
+        obtener el `Indexer` que debiera mantener el
+        índice invertido que contiene la `palabra`
+        :param palabra: un string con la palabra indexada
+        :return: el `Indexer` que mantiene el índice invertido
+        """
+        # Mientras no tengamos implementadas las particiones usamos un único índice
+        return self.reduce
