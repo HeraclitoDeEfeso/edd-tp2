@@ -28,7 +28,7 @@ class BTree(object):
 
             # Agrega al padre el nuevo nodo con las keys de mayor valor y devuelve el nodo que contendra la nueva key
             padre.hijo = padre.insertar_hijo(nuevo_nodo)
-            if nueva_key[0] < key_medio[0]:
+            if nueva_key < key_medio:
                 return self
             else:
                 return nuevo_nodo
