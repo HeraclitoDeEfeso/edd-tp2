@@ -88,7 +88,7 @@ class BTree(object):
                 else:
                     nodo = proximo
             # Como spliteamos todos los nodos completos en el camino a la hoja indicada podemos simplemente agregar la key.
-            nodo.agregar_key(nueva_key)
+            nodo.agregar_key(nueva_key)#aca ademas de agregar la key tambien agregaria el documento a la lista de aparicion.
 
     def buscar(self, valor, nodo=None, documento=None):
         """Devuelve True el valor esta en el arbol"""
