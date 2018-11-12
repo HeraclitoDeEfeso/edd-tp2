@@ -1,5 +1,5 @@
 class BTree(object):
-    """BTree de Orden t"""
+    """BTree de Orden t: permite 2 * orden - 1 keys"""
 
     class Nodo(object):
 
@@ -17,9 +17,9 @@ class BTree(object):
             padre.agregar_key(key_medio)
 
             # Agrega las keys y los hijos al nodo correcto,el nuevo nodo siempre contendra las keys mas altas
-            nuevo_nodo.hijo = self.hijo[mitad + 1:]
-            self.hijo = self.hijo[:mitad + 1]
-            nuevo_nodo.keys = self.keys[mitad + 1:]
+            nuevo_nodo.hijo = self.hijo[mitad :]
+            self.hijo = self.hijo[:mitad ]
+            nuevo_nodo.keys = self.keys[mitad :]
             self.keys = self.keys[:mitad]
 
             # Si el nuevo_nodo tiene hijo, es un nodo interno
@@ -48,7 +48,7 @@ class BTree(object):
         def insertar_hijo(self, nuevo_nodo):
             """agrega un hijo al nodo y ordena a todos los hijos.Devuelve una lista ordenada de los nodos hijos"""
             i = len(self.hijo) - 1 #ultimo hijo
-            while i >= 0 and self.hijo[i].keys > nuevo_nodo.keys:
+            while i >= 0 and self.hijo[i].keys[0] > nuevo_nodo.keys[0]:
                 i -= 1
             return self.hijo[:i + 1] + [nuevo_nodo] + self.hijo[i + 1:]
 
@@ -118,5 +118,29 @@ class BTree(object):
                 if nodo.hijo:
                     prox_nivel.extend(nodo.hijo)
                 output += str(nodo.keys) + " "
-                print(output)
-                este_nivel = prox_nivel
+            print(output)
+            este_nivel = prox_nivel
+
+
+
+def prueba():
+    """ expected = [5, 12] 
+[1, 2, 3, 4] [5, 6, 7, 8, 9] [12, 13, 123] """
+    b = BTree(3)
+    b.insertar(2)
+    b.insertar(12)
+    b.insertar(123)
+    b.insertar(13)
+    b.insertar(1)
+    b.insertar(5)
+    b.insertar(2)
+    b.insertar(9)
+    b.insertar(6)
+    b.insertar(1)
+    b.insertar(7)
+    b.insertar(8)
+    b.insertar(4)
+    b.insertar(3)
+    b.insertar(12)
+    b.insertar(2)
+    b.imprimir_arbol()
