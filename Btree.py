@@ -96,8 +96,9 @@ class BTree(object):
         if palabra not in nodo.keys:
             # Como spliteamos todos los nodos completos podemos simplemente agregar la key.
             nodo.agregar_key(palabra,documento)#aca agrega la key y el documento a la lista de aparicion.
-        else:
-            nodo.hijo[nodo.keys.index(palabra)].append(documento)
+
+        elif documento not in self.get(palabra):
+               nodo.hijo[nodo.keys.index(palabra)].append(documento)
 
     def get(self, palabra):
         nodo = self.raiz
@@ -114,8 +115,23 @@ class BTree(object):
         except ValueError as e: #si no es una key digo que no esta
             return(e)#key is not in list
 
-    def imprimir_arbol(self):
-        """imprime una representacion por nivel"""
+    def get_hojas(self):
+        hojas = []
+        este_nivel = [self.raiz]
+        while este_nivel:
+            prox_nivel = []
+            for nodo in este_nivel:
+                if not nodo.hoja:
+                    prox_nivel.extend(nodo.hijo)
+                else:
+                    hojas.append(nodo.keys)
+            este_nivel = prox_nivel
+        return hojas
+
+
+
+    def __imprimir_arbol(self):
+        """imprime una representacion visual por nivel unicamente util para cuequear arbol a simple vista"""
         este_nivel = [self.raiz]
         while este_nivel:
             prox_nivel = []
@@ -157,7 +173,15 @@ def prueba():
     b.add(19, 465464)
     b.add(17, 45461)
     b.add(18, "J")
-    b.imprimir_arbol()
+    a = BTree(3)
+    a.add(1, 5)
+    a.add(2, 5)
+    a.add(3, 4)
+    a.add(4, 5)
+    a.add(5, 5)
+    a.add(6, 5)
+    print(a.get_hojas())
+    b.__imprimir_arbol()
     """"                                [17] 
                                     [4, 12] [19, 113] 
     [1, 2, 3] [4, 5, 6, 9, 11] [12, 13, 15, 16] [17, 18] [19, 20, 112] [113, 123, 1123] """
