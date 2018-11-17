@@ -12,15 +12,20 @@ class BTree(object):
         def split(self, padre, palabra):
             """divide el nodo y reasigna keys e hijos,devuelve el nodo que contendra a la nueva key"""
             nuevo_nodo = self.__class__(self._t, self.hoja)
+
             mitad = self.size // 2
             key_medio = self.keys[mitad]
             padre.keys.append(key_medio)
             padre.keys.sort()
-
-            # Agrega las keys y los hijos al nodo correcto,el nuevo nodo siempre contendra las keys mas altas
-            nuevo_nodo.hijo = self.hijo[mitad :]
-            self.hijo = self.hijo[:mitad ]
-            nuevo_nodo.keys = self.keys[mitad :]
+            if not self.hoja:
+                self.keys.remove(key_medio)
+                # Agrega las keys y los hijos al nodo correcto,el nuevo nodo siempre contendra las keys mas altas
+                nuevo_nodo.hijo = self.hijo[mitad+1:]
+                self.hijo = self.hijo[:mitad+1]
+            else:
+                nuevo_nodo.hijo = self.hijo[mitad:]
+                self.hijo = self.hijo[:mitad ]
+            nuevo_nodo.keys = self.keys[mitad:]
             self.keys = self.keys[:mitad]
 
             # Agrega al padre el nuevo nodo con las keys de mayor valor y devuelve el nodo que contendra la nueva key
@@ -73,7 +78,6 @@ class BTree(object):
         if nodo._is_full:
             new_raiz = self.Nodo(self._t, False)
             new_raiz.hijo.append(self.raiz)
-            new_raiz.hoja = False
             # nodo sera el nodo que contendra la nueva key agregada y redefine la raiz
             nodo = nodo.split(new_raiz, palabra)
             self.raiz = new_raiz
@@ -81,7 +85,7 @@ class BTree(object):
             i = nodo.size - 1  # ultima key
             while i > 0 and palabra < nodo.keys[i]:
                 i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
-            if palabra > nodo.keys[i]:
+            if palabra >= nodo.keys[i]:
                 i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
             # proximo sera el nodo que sigue en el camino hasta ser la hoja que contendra la nueva key
             proximo = nodo.hijo[i]
@@ -95,21 +99,20 @@ class BTree(object):
         else:
             nodo.hijo[nodo.keys.index(palabra)].append(documento)
 
-    def get(self, key, nodo=None):
-        """Devuelve True el valor esta en el arbol"""
-        if nodo is None:
-            nodo = self.raiz
-        if nodo.hoja:
-            try: #si es una de las keys devuelvo su lista
-                posicion = nodo.keys.index(key)
-                return(nodo.hijo[posicion])
-            except ValueError as e: #si no es una key digo que no esta
-                return(e)#key is not in list
-        else: #si no es una hoja sigo bajando
-            i = 0
-            while i < nodo.size and key >= nodo.keys[i]:
-                i += 1  # hasta que i la pos del nodo hijo que podria contener el valor
-            return self.get(key, nodo.hijo[i])
+    def get(self, palabra):
+        nodo = self.raiz
+        while not nodo.hoja:
+            i = nodo.size - 1  # ultima key
+            while i > 0 and palabra < nodo.keys[i]:
+                i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
+            if palabra >= nodo.keys[i]:
+                i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
+            nodo = nodo.hijo[i]# proximo sera el nodo que sigue en la rama que lleva a la palabra
+        try: #si es una de las keys devuelvo su lista
+            posicion = nodo.keys.index(palabra)
+            return(nodo.hijo[posicion])
+        except ValueError as e: #si no es una key digo que no esta
+            return(e)#key is not in list
 
     def imprimir_arbol(self):
         """imprime una representacion por nivel"""
@@ -125,8 +128,6 @@ class BTree(object):
             este_nivel = prox_nivel
 
 def prueba():
-    """ expected = [4, 6, 12]
-    [1, 2, 3] [4, 5] [6, 7, 8, 9] [12, 13, 123]"""
     b = BTree(3)
     b.add(2,"A")
     b.add(2,"b")
@@ -139,17 +140,31 @@ def prueba():
     b.add(13,1321321)
     b.add(1,446)
     b.add(12, "dfgdg")
+    b.add(12, "dfgdg")
     b.add(5,4646)
     b.add(6,498412)
     b.add(9,465464)
-    b.add(7,45461)
-    b.add(8,"J")
+    b.add(17,45461)
+    b.add(18,"J")
+    b.add(13, 22220)
+    b.add(1123, 13213)
+    b.add(113, 1321321)
+    b.add(11, 446)
+    b.add(112, "dfgdg")
+    b.add(20, "dfgdg")
+    b.add(15, 4646)
+    b.add(16, 498412)
+    b.add(19, 465464)
+    b.add(17, 45461)
+    b.add(18, "J")
     b.imprimir_arbol()
-
-    print("4: " + ",".join(str(x) for x in b.get(4))) #[46]
-    print("2: "+ ",".join(str(x) for x in b.get(2)))#['A', 'b', 'c', 'd']
-    print("1: "+ ",".join(str(x) for x in b.get(1))) #[446]
-    print("12: "+ ",".join(str(x) for x in b.get(12)))#[48, 'dfgdg']
+    """"                                [17] 
+                                    [4, 12] [19, 113] 
+    [1, 2, 3] [4, 5, 6, 9, 11] [12, 13, 15, 16] [17, 18] [19, 20, 112] [113, 123, 1123] """
+    print(b.get(4)) #[46]
+    print(b.get(2))#['A', 'b', 'c', 'd']
+    print(b.get(1)) #[446]
+    print(b.get(12))#[48, 'dfgdg']
     print(b.get(99999999))#99999999 is not in list
 
 
