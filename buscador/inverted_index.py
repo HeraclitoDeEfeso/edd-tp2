@@ -18,13 +18,12 @@ class Tokenizer(object):
         :param documento: una cadena con el contenido de texto del documento
         :return: una lista de cadenas de caracteres representando las palabras
         """
-        # TODO Falta implementar el stemming y el filtro de palabras básicas
         #Realizo el stemming en todo el contenido. Eliminando acentos mayusculas y dejando las raices.
         cont_stemed = self.stemmer.stem(contenido)
         #Divido el texto por palabras eliminando las repetidas
         conjunto_palabras = set(re.split(r'\W+', cont_stemed))
-        #Elimino Stopwords y retorno lista
-        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish')]
+        #Elimino Stopwords, palabras menores a min_long y retorno lista
+        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish') && not len(palabra) < min_long]
 
                         
 
