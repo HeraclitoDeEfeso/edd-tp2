@@ -23,7 +23,7 @@ class Tokenizer(object):
         #Divido el texto por palabras eliminando las repetidas
         conjunto_palabras = set(re.split(r'\W+', cont_stemed))
         #Elimino Stopwords, palabras menores a min_long y retorno lista
-        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish') && not len(palabra) < min_long]
+        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish') and not len(palabra) < min_long]
 
                         
 
