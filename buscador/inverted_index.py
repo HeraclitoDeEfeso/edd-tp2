@@ -1,4 +1,6 @@
 import re
+from nltk.stem.snowball import SpanishStemmer
+from nltk.corpus import stopwords
 from buscador.btree import BTree
 
 
@@ -7,14 +9,25 @@ class Tokenizer(object):
     Esta clase es la encargada de obtener las palabras de los
     documentos recuperados por el `Crawler`
     """
+    def __init__(self):
+        self.stemmer = SpanishStemmer()
 
-    def obtener_palabras(self, contenido):
+    def obtener_palabras(self, contenido, min_long=5):
         """
         Este método devuelve una lista de palabras recuperadas del `contenido`
         :param documento: una cadena con el contenido de texto del documento
         :return: una lista de cadenas de caracteres representando las palabras
         """
         # TODO Falta implementar el stemming y el filtro de palabras básicas
+        #Realizo el stemming en todo el contenido. Eliminando acentos mayusculas y dejando las raices.
+        cont_stemed = self.stemmer.stem(contenido)
+        #Divido el texto por palabras eliminando las repetidas
+        conjunto_palabras = set(re.split(r'\W+', cont_stemed))
+        #Elimino Stopwords y retorno lista
+        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish')]
+
+                        
+
         return sorted(set(re.split(r'\W+', contenido)))
 
 
