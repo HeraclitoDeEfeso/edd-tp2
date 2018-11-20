@@ -5,20 +5,19 @@ import unittest
 from buscador.btree import BTree
 
 
-
 class BTree_test(unittest.TestCase):
 
     def setUp(self):
         # Se crea un arbol de orden 3 para realizar las pruebas
         self.arbol = BTree(3)
         self.b = BTree(3)
-        self.b.add(2, "A"),self.b.add(2, "b"),self.b.add(2, "c"),self.b.add(2, "d")
-        self.b.add(12, 48),self.b.add(4, 46),self.b.add(3, 22220),self.b.add(123, 13213)
-        self.b.add(13, 1321321),self.b.add(1, 446),self.b.add(12, "dfgdg"),self.b.add(12, "dfgdg")
-        self.b.add(5, 4646),self.b.add(6, 498412),self.b.add(9, 465464),self.b.add(17, 45461)
-        self.b.add(18, "J"),self.b.add(13, 22220),self.b.add(1123, 13213),self.b.add(113, 1321321)
-        self.b.add(11, 446),self.b.add(112, "dfgdg"),self.b.add(20, "dfgdg"),self.b.add(15, 4646)
-        self.b.add(16, 498412),self.b.add(19, 465464),self.b.add(17, 45461),self.b.add(18, "J")
+        self.b.add(2, "A"), self.b.add(2, "b"), self.b.add(2, "c"), self.b.add(2, "d")
+        self.b.add(12, 48), self.b.add(4, 46), self.b.add(3, 22220), self.b.add(123, 13213)
+        self.b.add(13, 1321321), self.b.add(1, 446), self.b.add(12, "dfgdg"), self.b.add(12, "dfgdg")
+        self.b.add(5, 4646), self.b.add(6, 498412), self.b.add(9, 465464), self.b.add(17, 45461)
+        self.b.add(18, "J"), self.b.add(13, 22220), self.b.add(1123, 13213), self.b.add(113, 1321321)
+        self.b.add(11, 446), self.b.add(112, "dfgdg"), self.b.add(20, "dfgdg"), self.b.add(15, 4646)
+        self.b.add(16, 498412), self.b.add(19, 465464), self.b.add(17, 45461), self.b.add(18, "J")
 
     def test_se_puede_crear_un_arbol_de_cualquier_orden_mayor_a_uno(self):
         self.arbol = BTree(3)
@@ -40,6 +39,7 @@ class BTree_test(unittest.TestCase):
         self.assertEqual([46, 6, 4, 64], self.arbol.get("alfonso"))
 
     """los arboles de oprden 3 splitean al llegar a 5 keys(2*3-1)"""
+
     def test_verificando_que_el_arbol_splitea_correctamente(self):
         self.arbol.add(1, 5)
         self.arbol.add(2, 5)
@@ -48,7 +48,7 @@ class BTree_test(unittest.TestCase):
         self.arbol.add(5, 5)
         self.arbol.add(6, 5)
         self.assertEqual([3], self.arbol.raiz.keys)
-        self.assertEqual([[1, 2],[3, 4, 5, 6]], self.arbol.get_hojas())
+        self.assertEqual([[1, 2], [3, 4, 5, 6]], self.arbol.get_hojas())
 
     def test_verificando_que_el_arbol_resista_una_gran_cantidad_de_datos(self):
         self.assertEqual([[1, 2, 3], [4, 5, 6, 9, 11], [12, 13, 15, 16], [17, 18], [19, 20, 112], [113, 123, 1123]],
@@ -63,7 +63,7 @@ class BTree_test(unittest.TestCase):
         self.arbol.add(1, "1 sola vez")
         self.arbol.add(1, "otro")
         self.arbol.add(1, "1 sola vez")
-        self.assertEqual(["1 sola vez","otro"], self.arbol.get(1))
+        self.assertEqual(["1 sola vez", "otro"], self.arbol.get(1))
 
     def test_verificando_que_el_Get_de_una_palabra_que_no_esta_en_el_arbol_imprime_un_aviso(self):
         self.assertEqual("'hola' is not in list", str(self.arbol.get("hola")))

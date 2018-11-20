@@ -9,25 +9,29 @@ class Tokenizer(object):
     Esta clase es la encargada de obtener las palabras de los
     documentos recuperados por el `Crawler`
     """
-    def __init__(self):
-        self.stemmer = SpanishStemmer()
 
-    def obtener_palabras(self, contenido, min_long=5):
+    def __init__(self, min_long = 5):
+        """
+        Para inicializar un `Tokenizer` es necesario saber el tamaño mínimo de caracteres
+        `min_long`. que constituyen una palabra válidad
+        :param min_long: un entero. Por defecto igual a cinco (5)
+        """
+        self.stemmer = SpanishStemmer()
+        self.min_long = min_long
+
+    def obtener_palabras(self, contenido):
         """
         Este método devuelve una lista de palabras recuperadas del `contenido`
-        :param documento: una cadena con el contenido de texto del documento
+        :param contenido: una cadena con el contenido de texto del documento
         :return: una lista de cadenas de caracteres representando las palabras
         """
-        #Realizo el stemming en todo el contenido. Eliminando acentos mayusculas y dejando las raices.
+        # Realizo el stemming en todo el contenido. Eliminando acentos mayusculas y dejando las raices.
         cont_stemed = self.stemmer.stem(contenido)
-        #Divido el texto por palabras eliminando las repetidas
+        # Divido el texto por palabras eliminando las repetidas
         conjunto_palabras = set(re.split(r'\W+', cont_stemed))
-        #Elimino Stopwords, palabras menores a min_long y retorno lista
-        return [palabra for palabra in conjunto_palabras if palabra not in stopwords.words('spanish') and not len(palabra) < min_long]
-
-                        
-
-        return sorted(set(re.split(r'\W+', contenido)))
+        # Elimino Stopwords, palabras menores a min_long y retorno lista
+        return [palabra for palabra in conjunto_palabras if
+                palabra not in stopwords.words('spanish') and not len(palabra) < self.min_long]
 
 
 class Indexer(object):
@@ -86,7 +90,7 @@ class Control(object):
     """
 
     def __init__(self, separadores=None, indexadores=None):
-        # TODO: Particiones
+        # TODO: Particiones e índices reversos
         # Mientras no implementemos las particiones utilizamos un tokenizer y un índice
         self.map = separadores if separadores else Tokenizer()
         self.reduce = indexadores if indexadores else Indexer()

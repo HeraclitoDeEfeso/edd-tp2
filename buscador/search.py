@@ -18,9 +18,8 @@ class Buscador(object):
         Un patrón de palabra admite una sola ocurrencia de entre cualquiera de los
         siguientes wildcards:
             * indica una cantidad indeterminada de cualesquiera caracteres (incluyendo cero)
-            . indica una sola y necesaria presencia de un caracter cualquiera
         :param patron_palabra: cadena de caracteres que representa un patron de palabras
-        :return: un set de `Documento`
+        :return: un set de enteros que corresponden a los identificadores de documentos
         """
         # Se debe implementar el parseo de un patrón:
         #   - comprobar que exista un sólo wildcard
@@ -30,34 +29,32 @@ class Buscador(object):
         #     según el wildcard: para el punto es el largo del sufijo más el prefijo
         #     más uno, y para el asterisco al menos el largo del prefijo más el sufijo
         # Mientras tanto devolvemos los documentos que tienen la palabra exacta
-        return self.controlador.obtener_indice(patron_palabra).obtener_documentos(patron_palabra)
+        return set(self.controlador.obtener_indice(patron_palabra).obtener_documentos(patron_palabra))
 
     def busqueda_conjuntiva(self, patron_palabra, documentos):
         """
         Agrega al conjunto de `documentos` aquellos que también estén
         en el índice y contengan el `patron_palabra`
         :param patron_palabra: una cadena de caracteres
-        :param documentos: un `set` de `Documento`
-        :return: un `set` de `Documento`
+        :param documentos: un `set` de enteros. Representan identificadores de documentos
+        :return: un `set` de enteros. Representan identificadores de documentos
         """
         return documentos.union(self.buscar(patron_palabra))
 
     def busqueda_disjuntiva(self, patron_palabra, documentos):
         """
-        Elimina del conjunto de `documentos` aquellos que no contengan
-        el `patron_palabra`
+        Elimina de la lista de `documentos` aquellos que no contengan el `patron_palabra`
         :param patron_palabra: una cadena de caracteres
-        :param documentos: un `set` de `Documento`
-        :return: un `set` de `Documento`
+        :param documentos: un `set` de enteros. Representan identificadores de documentos
+        :return: un `set` de enteros. Representan identificadores de documentos
         """
         return documentos.intersection(self.buscar(patron_palabra))
 
     def busqueda_negativa(self, patron_palabra, documentos):
         """
-        Elimina del conjunto de `documentos` aquellos que contengan
-        el `patron_palabra`
+        Elimina del conjunto de `documentos` aquellos que contengan el `patron_palabra`
         :param patron_palabra: una cadena de caracteres
-        :param documentos: un `set` de `Documento`
-        :return: un `set` de `Documento`
+        :param documentos: un `set` de enteros. Representan identificadores de documentos
+        :return: un `set` de enteros. Representan identificadores de documentos
         """
         return documentos.difference(self.buscar(patron_palabra))

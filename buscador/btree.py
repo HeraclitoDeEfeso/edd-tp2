@@ -64,8 +64,8 @@ class BTree(object):
                 i -= 1
             return self.hijo[:i + 1] + [nuevo_nodo] + self.hijo[i + 1:]
 
-    def __init__(self, t):
-        """Crea un arbolb de orden t sin keys.Actualmente permite keys duplicadas"""
+    def __init__(self, t=5):
+        """Crea un arbolb de orden t sin keys. Actualmente permite keys duplicadas. Por defecto el orden es 5"""
         self._t = t
         if self._t <= 1:
             raise ValueError("El orden del arbol debe ser 2 o superior")
