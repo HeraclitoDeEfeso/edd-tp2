@@ -1,8 +1,10 @@
 from html.parser import HTMLParser
 from urllib.request import urlopen
 from urllib import parse
+from urllib.parse import urlsplit, urlunsplit
 import logging
-from buscador import limpiar_direccion, es_direccion_relativa
+import signal
+import time
 
 
 class LinkParser(HTMLParser):
@@ -52,33 +54,54 @@ class Crawler(object):
     los enlaces en las páginas dentro de la frontera de dominios asignada
     """
 
-    def __init__(self, control, dominios, log):
+    def __init__(self, control, dominios, log="log.txt", tmin=500):
         """
         Para crear un `Cawler` es necesario un lista de `dominios` que
         compongan su frontera y un `control` al que le pase la páginas
-        que deben ser procesadas
+        que deben ser procesadas, un nombre del archivo de `log` donde
+        persistirá sus actividades y un tiempo mínimo `tmin` de milisegundos
+        entre peticiones de página a un mismo servidor web.
         :param control: un `Control`
         :param dominios: una lista de cadenas de caracteres que representen las direcciones
         :param log: una cadena de caracteres con el nombre del archivo de logging
+        :param tmin: un entero que representa milisegundos
         """
         self.controlador = control
         self.dominios = dominios
         self.archivo_log = log
+        self.tmin = tmin
+        self.direcciones_procesadas = set()
+        self.direcciones_sin_procesar = []
+        self.direcciones_recorridas = []
+        self.__salir_original__ = signal.getsignal(signal.SIGINT)
+        self.archivo_modo = "w"
+        self.parser = LinkParser()
         self.recuperar()
+        self.logger = logging.getLogger("crawler")
+        self.logger.setLevel(logging.INFO)
+        log_handler = logging.FileHandler(self.archivo_log, self.archivo_modo)
+        log_handler.setLevel(logging.INFO)
+        log_handler.setFormatter(logging.Formatter('%(message)s [%(asctime)s]'))
+        self.logger.addHandler(log_handler)
 
     def iniciar(self):
         """
         El método que inicia la labor del `Crawler` o la
         continúa después de haber sido detenido
         """
+        self.tiempo = time.monotonic()
+        self.salir = False
         self.registrar()
-        logging.info("Crawler iniciado")
-        while self.direcciones_sin_procesar:
+        self.logger.info("Crawler iniciado")
+        while self.direcciones_sin_procesar and not self.salir:
             direccion = self.direcciones_sin_procesar[-1]
             if not self.direcciones_recorridas \
                     or self.direcciones_recorridas[-1] != direccion:
-                logging.info(direccion)
-                contenido, enlaces = LinkParser().fetch_page(direccion)
+                tiempo_restante = self.tmin / 1000 - (time.monotonic() - self.tiempo)
+                if tiempo_restante > 0:
+                    time.sleep(tiempo_restante)
+                contenido, enlaces = self.parser.fetch_page(direccion)
+                self.logger.info(direccion)
                 self.controlador.procesar_documento(direccion, contenido)
                 self.direcciones_procesadas.add(direccion)
                 self.direcciones_recorridas.append(direccion)
@@ -89,7 +112,7 @@ class Crawler(object):
             else:
                 self.direcciones_sin_procesar.pop()
                 self.direcciones_recorridas.pop()
-                logging.info(direccion + " completa")
+                self.logger.info(direccion + " completa")
         self.detener()
 
     def detener(self):
@@ -97,7 +120,7 @@ class Crawler(object):
         El método que detiene la labor del `Crawler` y lo
         deja en un estado conocido para que pueda ser reiniciado
         """
-        logging.info("Crawler finalizado")
+        self.logger.info("Crawler finalizado")
         self.almacenar()
         self.desregistrar()
 
@@ -107,12 +130,7 @@ class Crawler(object):
         """
         # TODO: recuperación desde el logging
         # Mientras tanto el Crawler comienza siempre desde cero
-        self.direcciones_procesadas = set()
-        self.direcciones_sin_procesar = []
-        self.direcciones_recorridas = []
         self.direcciones_sin_procesar = self.dominios[:]
-        # TODO: formatear el loggin
-        logging.basicConfig(filename=self.archivo_log, level=logging.INFO)
 
     def almacenar(self):
         """
@@ -127,19 +145,17 @@ class Crawler(object):
         """
         El método que registra un manejador para la señal de sistema CTRL-C
         """
-        # TODO: Captura de la interrupción por teclado
-        pass
+        signal.signal(signal.SIGINT, lambda x, y: self.__salir__())
 
     def desregistrar(self):
         """
         El método que elimina el manejador para la señal de sistema CTRL-C
         """
-        pass
+        signal.signal(signal.SIGINT, self.__salir_original__)
 
     def direccion_en_frontera(self, direccion):
         """
-        Éste método informa si `direccion` está en la
-        frontera asignada al `Crawler`
+        Éste método informa si `direccion` está en la frontera asignada al `Crawler`
         :param direccion: una `Direccion`
         :return: bool
         """
@@ -152,4 +168,31 @@ class Crawler(object):
         :param direccion: una `Direccion`
         :return: bool
         """
-        return not direccion in self.direcciones_procesadas
+        return direccion not in self.direcciones_procesadas
+
+    def __salir__(self):
+        """
+        Manejador de la señal de CTRL-C. Simplemente setea un bool.
+        """
+        self.salir = True
+
+
+def es_direccion_relativa(dominio, direccion):
+    """
+    La función indica si la `dirección` es relativa
+    con respecto de un `dominio`
+    :param dominio: una cadena de caracteres
+    :param direccion: una cadena de caracteres
+    :return: bool `True` si `direccion` es relativa al `dominio`
+    """
+    return urlsplit(dominio)[:2] == urlsplit(direccion)[:2]
+
+
+def limpiar_direccion(direccion):
+    """
+    La función elimina parámetros (query strings) y enlaces internos
+    (fragment identifiers) de `direccion`
+    :param direccion: una cadena de caracteres
+    :return: una cadena de caracteres que representa la dirección limpia
+    """
+    return urlunsplit(urlsplit(direccion)[:3] + ('', ''))
