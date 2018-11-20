@@ -16,7 +16,7 @@ En modo consola de Python, correr:
     nltk.download()
 
 Luego de esto se abrirá una ventana, ir a Packages e instalar 
-el paquete stopwords.
+el paquete `stopwords`.
 
 ## Ejecucion
 El paquete trae una consola básica de ejecución. Lo mismo que 
@@ -25,6 +25,7 @@ un archivo de configuración en el directorio raiz del proyecto
 raiz del proyecto:
 
     python -m buscador
+    
 ## Pruebas
 Para correr los test unitarios que vienen con la aplicación debe 
 ubicarse en el directorio raiz del proyecto y ejecutar en la línea 

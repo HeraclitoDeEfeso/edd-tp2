@@ -57,9 +57,12 @@ class Indexer(object):
         """
         Método que devuelve las referencias a los documentos que contenienen la `palabra`
         :param palabra: una cadena de caracteres que representa la palabra
-        :return: una lista de números como referencias a documentos
+        :return: un lista de números como referencias a documentos
         """
-        return self.indice.get(palabra)
+        resultado = self.indice.get(palabra)
+        if isinstance(resultado, ValueError):
+            return []
+        return resultado
 
     def palabras_mayores(self, palabra):
         """

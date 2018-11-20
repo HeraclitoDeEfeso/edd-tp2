@@ -113,7 +113,7 @@ class BTree(object):
             posicion = nodo.keys.index(palabra)
             return(nodo.hijo[posicion])
         except ValueError as e: #si no es una key digo que no esta
-            return(e)#key is not in list
+            return(e) #key is not in list
 
     def get_hojas(self):
         hojas = []
