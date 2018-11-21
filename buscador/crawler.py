@@ -71,37 +71,35 @@ class Crawler(object):
         self.archivo_log = log
         self.tmin = tmin
         self.direcciones_procesadas = set()
-        self.direcciones_sin_procesar = []
+        self.direcciones_sin_procesar = dominios
         self.direcciones_recorridas = []
-        self.__salir_original__ = signal.getsignal(signal.SIGINT)
         self.archivo_modo = "w"
-        self.parser = LinkParser()
-        self.recuperar()
-        self.logger = logging.getLogger("crawler")
-        self.logger.setLevel(logging.INFO)
-        log_handler = logging.FileHandler(self.archivo_log, self.archivo_modo)
-        log_handler.setLevel(logging.INFO)
-        log_handler.setFormatter(logging.Formatter('%(message)s [%(asctime)s]'))
-        self.logger.addHandler(log_handler)
 
     def iniciar(self):
         """
         El método que inicia la labor del `Crawler` o la
         continúa después de haber sido detenido
         """
-        self.tiempo = time.monotonic()
+        parser = LinkParser()
+        logger = logging.getLogger("crawler")
+        logger.setLevel(logging.INFO)
+        log_handler = logging.FileHandler(self.archivo_log, self.archivo_modo)
+        log_handler.setLevel(logging.INFO)
+        log_handler.setFormatter(logging.Formatter('%(message)s [%(asctime)s]'))
+        logger.addHandler(log_handler)
+        tiempo = time.monotonic()
         self.salir = False
-        self.registrar()
-        self.logger.info("Crawler iniciado")
+        salir_original = self.registrar()
+        logger.info("Crawler iniciado")
         while self.direcciones_sin_procesar and not self.salir:
             direccion = self.direcciones_sin_procesar[-1]
             if not self.direcciones_recorridas \
                     or self.direcciones_recorridas[-1] != direccion:
-                tiempo_restante = self.tmin / 1000 - (time.monotonic() - self.tiempo)
+                tiempo_restante = self.tmin / 1000 - (time.monotonic() - tiempo)
                 if tiempo_restante > 0:
                     time.sleep(tiempo_restante)
-                contenido, enlaces = self.parser.fetch_page(direccion)
-                self.logger.info(direccion)
+                contenido, enlaces = parser.fetch_page(direccion)
+                logger.info(direccion)
                 self.controlador.procesar_documento(direccion, contenido)
                 self.direcciones_procesadas.add(direccion)
                 self.direcciones_recorridas.append(direccion)
@@ -112,46 +110,60 @@ class Crawler(object):
             else:
                 self.direcciones_sin_procesar.pop()
                 self.direcciones_recorridas.pop()
-                self.logger.info(direccion + " completa")
-        self.detener()
+                logger.info(direccion + " completa")
+        logger.info("Crawler finalizado")
+        self.archivo_modo = "a"
+        self.desregistrar(salir_original)
 
-    def detener(self):
+    def __getstate__(self):
         """
-        El método que detiene la labor del `Crawler` y lo
-        deja en un estado conocido para que pueda ser reiniciado
+        Este método es parte del protocolo Pickle
+        :return: un `dict` con los atributos a persistir
         """
-        self.logger.info("Crawler finalizado")
-        self.almacenar()
-        self.desregistrar()
+        # Copy the object's state from self.__dict__
+        state = self.__dict__.copy()
+        # Remove the unpicklable entries.
+        del state['direcciones_procesadas'], state['direcciones_recorridas']
+        return state
 
-    def recuperar(self):
+    def __setstate__(self, state):
         """
-        El método que recupera los datos almacenados al detener el `Crawler`
+        Éste método es parte del protocolo Pickle
+        :param state: un `dict` con los atributos que han persistido
         """
-        # TODO: recuperación desde el logging
-        # Mientras tanto el Crawler comienza siempre desde cero
-        self.direcciones_sin_procesar = self.dominios[:]
-
-    def almacenar(self):
-        """
-        El método que almacena los datos del estado del `Crawler` para poder
-        reiniciar el proceso donde se detuvo
-        :return:
-        """
-        # TODO: Persistencia del Crawler
-        pass
+        # Restore instance attributes.
+        self.__dict__.update(state)
+        self.direcciones_procesadas = set()
+        self.direcciones_recorridas = []
+        # Restore the previously state.
+        with open(self.archivo_log, "r") as log:
+            for linea in log:
+                palabras = linea.split()
+                if len(palabras) == 2:
+                    self.direcciones_procesadas.add(palabras[0])
+                    self.direcciones_recorridas.append(palabras[0])
+                elif len(palabras) == 3 and palabras[0] != "Crawler":
+                    if self.direcciones_recorridas[-1] == palabras[0]:
+                        self.direcciones_recorridas.pop()
+                    else:
+                        raise ValueError("Archivo de log %s corrupto" % self.archivo_log)
 
     def registrar(self):
         """
         El método que registra un manejador para la señal de sistema CTRL-C
+        :return: el manejador original de la señal de sistema
         """
+        salir_original = signal.getsignal(signal.SIGINT)
         signal.signal(signal.SIGINT, lambda x, y: self.__salir__())
+        return salir_original
 
-    def desregistrar(self):
+    def desregistrar(self, handler):
         """
         El método que elimina el manejador para la señal de sistema CTRL-C
+        :param handler: un manejador para la señal del sistema
         """
-        signal.signal(signal.SIGINT, self.__salir_original__)
+        signal.signal(signal.SIGINT, handler)
+
 
     def direccion_en_frontera(self, direccion):
         """
