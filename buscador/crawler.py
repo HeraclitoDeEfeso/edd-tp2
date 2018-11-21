@@ -139,10 +139,10 @@ class Crawler(object):
         with open(self.archivo_log, "r") as log:
             for linea in log:
                 palabras = linea.split()
-                if len(palabras) == 2:
+                if len(palabras) == 3:
                     self.direcciones_procesadas.add(palabras[0])
                     self.direcciones_recorridas.append(palabras[0])
-                elif len(palabras) == 3 and palabras[0] != "Crawler":
+                elif len(palabras) == 4 and palabras[1] == "completa":
                     if self.direcciones_recorridas[-1] == palabras[0]:
                         self.direcciones_recorridas.pop()
                     else:

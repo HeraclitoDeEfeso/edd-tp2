@@ -1,10 +1,11 @@
+from configparser import ConfigParser
+from functools import reduce
+from sys import stdout
+from logging import StreamHandler, getLogger, INFO, Formatter
+from pickle import load, dump
 from buscador.crawler import Crawler
 from buscador.inverted_index import Control, Tokenizer
 from buscador.search import Buscador
-from configparser import ConfigParser
-from functools import reduce
-import sys
-import logging
 
 # Leo el archivo de configuración
 # TODO: agregar la opción del nombre del archivo a la línea de comandos
@@ -13,19 +14,25 @@ config.read("config.ini")
 
 # Se crean los objetos de acuerdo a los valores de configuración
 # TODO: está pendiente el manejo de los índices invertidos de palabras reversas
-control = Control(separadores=Tokenizer(int(config["INVERTED_INDEX"]["min_long"])))
-crawler = Crawler(control,
-                  [direccion.encode('utf-8').decode('unicode_escape')
-                   for direccion in config["CRAWLER"]["URLs"].split(";")],
-                  config["CRAWLER"]["Log"],
-                  int(config["CRAWLER"]["Tmin"]))
+try:
+    archivo = open("crawler.bin", "rb")
+    crawler = load(archivo)
+    control = crawler.controlador
+    archivo.close()
+except OSError:
+    control = Control(separadores=Tokenizer(int(config["INVERTED_INDEX"]["min_long"])))
+    crawler = Crawler(control,
+                      [direccion.encode('utf-8').decode('unicode_escape')
+                       for direccion in config["CRAWLER"]["URLs"].split(";")],
+                      config["CRAWLER"]["Log"],
+                      int(config["CRAWLER"]["Tmin"]))
 buscador = Buscador(control)
 
 # Se agrega un manejador del logger del crawler para que se emita la actividad por consola
-logger = logging.getLogger("crawler")
-log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.INFO)
-log_handler.setFormatter(logging.Formatter('%(message)s'))
+logger = getLogger("crawler")
+log_handler = StreamHandler(stdout)
+log_handler.setLevel(INFO)
+log_handler.setFormatter(Formatter('%(message)s'))
 logger.addHandler(log_handler)
 
 # Ciclo principal
@@ -45,5 +52,6 @@ while True:
         else:
             break
     if input("\nDesea salir de la aplicación [S/N] ?  ").lower() == "s":
-        # TODO: persistencia del índice
+        with open("crawler.bin", "wb") as archivo:
+            dump(crawler, archivo)
         break
