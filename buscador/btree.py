@@ -130,7 +130,7 @@ class BTree(object):
 
 
 
-    def __imprimir_arbol(self):
+    def _imprimir_arbol(self):
         """imprime una representacion visual por nivel unicamente util para cuequear arbol a simple vista"""
         este_nivel = [self.raiz]
         while este_nivel:
@@ -142,56 +142,37 @@ class BTree(object):
                 output += str(nodo.keys) + " "
             print(output)
             este_nivel = prox_nivel
+            
+            
+            
+    def get_Slice(self, inicio, fin, por_revisar=[]):
+        if fin <= inicio:
+            raise ValueError("el inicio debe ser menor al fin")
+        resultado = []
+        nuevos_hijos = []
+        if len(por_revisar) == 0:
+            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, self.raiz,resultado)
+            if len(nuevos_hijos) > 0:
+                for nv in nuevos_hijos:
+                    por_revisar.append(nv)
+        while len(por_revisar) > 0:
+            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, por_revisar[0],resultado)
+            por_revisar.pop(0)
+            if len(nuevos_hijos) > 0:
+                for nv in nuevos_hijos:
+                        por_revisar.append(nv)
+        return resultado
 
-def prueba():
-    b = BTree(3)
-    b.add(2,"A")
-    b.add(2,"b")
-    b.add(2,"c")
-    b.add(2,"d")
-    b.add(12,48)
-    b.add(4,46)
-    b.add(3, 22220)
-    b.add(123,13213)
-    b.add(13,1321321)
-    b.add(1,446)
-    b.add(12, "dfgdg")
-    b.add(12, "dfgdg")
-    b.add(5,4646)
-    b.add(6,498412)
-    b.add(9,465464)
-    b.add(17,45461)
-    b.add(18,"J")
-    b.add(13, 22220)
-    b.add(1123, 13213)
-    b.add(113, 1321321)
-    b.add(11, 446)
-    b.add(112, "dfgdg")
-    b.add(20, "dfgdg")
-    b.add(15, 4646)
-    b.add(16, 498412)
-    b.add(19, 465464)
-    b.add(17, 45461)
-    b.add(18, "J")
-    a = BTree(3)
-    a.add(1, 5)
-    a.add(2, 5)
-    a.add(3, 4)
-    a.add(4, 5)
-    a.add(5, 5)
-    a.add(6, 5)
-    print(a.get_hojas())
-    b.__imprimir_arbol()
-    """"                                [17] 
-                                    [4, 12] [19, 113] 
-    [1, 2, 3] [4, 5, 6, 9, 11] [12, 13, 15, 16] [17, 18] [19, 20, 112] [113, 123, 1123] """
-    print(b.get(4)) #[46]
-    print(b.get(2))#['A', 'b', 'c', 'd']
-    print(b.get(1)) #[446]
-    print(b.get(12))#[48, 'dfgdg']
-    print(b.get(99999999))#99999999 is not in list
-
-
-if __name__ == "__main__":
-    prueba()
-
+    def _buscar_hijos_compatibles(self,inicio, fin, nodo, resultado):
+        nueva_lista = []
+        if not nodo.hoja:
+            i = 0
+            while i < nodo.size and inicio > nodo.keys[i]:
+                i += 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
+            for posicion in range(i, nodo.size+1):
+                    nueva_lista.append(nodo.hijo[posicion])
+        else:
+            for key in nodo.keys:
+                if inicio <= key < fin:
+                    resultado.append(key)
+        return nueva_lista
