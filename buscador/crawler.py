@@ -80,17 +80,22 @@ class Crawler(object):
         El método que inicia la labor del `Crawler` o la
         continúa después de haber sido detenido
         """
+        # Instanciar un parser
         parser = LinkParser()
+        # Instanciar un logger
         logger = logging.getLogger("crawler")
         logger.setLevel(logging.INFO)
         log_handler = logging.FileHandler(self.archivo_log, self.archivo_modo)
         log_handler.setLevel(logging.INFO)
         log_handler.setFormatter(logging.Formatter('%(message)s [%(asctime)s]'))
         logger.addHandler(log_handler)
+        logger.info("Crawler iniciado")
+        # Instanciar un handler de CONTROL-C
+        salir_original = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGINT, lambda x, y: self.__salir__())
+        # Inicializar un tiempo de referencia y una bandera de salida
         tiempo = time.monotonic()
         self.salir = False
-        salir_original = self.registrar()
-        logger.info("Crawler iniciado")
         while self.direcciones_sin_procesar and not self.salir:
             direccion = self.direcciones_sin_procesar[-1]
             if not self.direcciones_recorridas \
@@ -113,7 +118,7 @@ class Crawler(object):
                 logger.info(direccion + " completa")
         logger.info("Crawler finalizado")
         self.archivo_modo = "a"
-        self.desregistrar(salir_original)
+        signal.signal(signal.SIGINT, salir_original)
 
     def __getstate__(self):
         """
@@ -147,23 +152,6 @@ class Crawler(object):
                         self.direcciones_recorridas.pop()
                     else:
                         raise ValueError("Archivo de log %s corrupto" % self.archivo_log)
-
-    def registrar(self):
-        """
-        El método que registra un manejador para la señal de sistema CTRL-C
-        :return: el manejador original de la señal de sistema
-        """
-        salir_original = signal.getsignal(signal.SIGINT)
-        signal.signal(signal.SIGINT, lambda x, y: self.__salir__())
-        return salir_original
-
-    def desregistrar(self, handler):
-        """
-        El método que elimina el manejador para la señal de sistema CTRL-C
-        :param handler: un manejador para la señal del sistema
-        """
-        signal.signal(signal.SIGINT, handler)
-
 
     def direccion_en_frontera(self, direccion):
         """
