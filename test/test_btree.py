@@ -68,6 +68,18 @@ class BTree_test(unittest.TestCase):
     def test_verificando_que_el_Get_de_una_palabra_que_no_esta_en_el_arbol_imprime_un_aviso(self):
         self.assertEqual("'hola' is not in list", str(self.arbol.get("hola")))
 
+    def test_verificando_que_el_get_slice_devuelva_los_elementos_en_el_rango_debido(self):
+        self.assertEqual([1,2,3,4], self.b.get_Slice(1,5))
+        self.assertEqual([1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 15, 16, 17, 18, 19, 20, 112, 113], self.b.get_Slice(1,120))
+        self.assertEqual([17, 18, 19, 20, 112, 113], self.b.get_Slice(17, 120))
+        self.assertEqual([3, 4], self.b.get_Slice(3, 5))
+        self.assertEqual([6, 9, 11, 12, 13, 15, 16], self.b.get_Slice(6, 17))
+        self.assertEqual([12, 13, 15, 16, 17, 18], self.b.get_Slice(12, 19))
+        self.assertEqual([17, 18, 19, 20], self.b.get_Slice(17, 112))
+
+    def test_al_pedir_un_slice_con_un_inicio_mayor_al_final_devuelve_un_valueError(self):
+        with self.assertRaises(ValueError):
+            self.b.get_Slice(5, 1)
 
 if __name__ == "__main__":
     unittest.main(argv=['first-arg-is-ignored'], verbosity=2, exit=False)

@@ -101,6 +101,7 @@ class BTree(object):
                nodo.hijo[nodo.keys.index(palabra)].append(documento)
 
     def get(self, palabra):
+        """este metodo devuelve la lista de aparicion de la key indicada por parametro"""
         nodo = self.raiz
         while not nodo.hoja:
             i = nodo.size - 1  # ultima key
@@ -116,6 +117,7 @@ class BTree(object):
             return(e) #key is not in list
 
     def get_hojas(self):
+        """este metodo devuelve las hojas separadas por listas que representan cada nodo"""
         hojas = []
         este_nivel = [self.raiz]
         while este_nivel:
@@ -146,6 +148,7 @@ class BTree(object):
             
             
     def get_Slice(self, inicio, fin, por_revisar=[]):
+        """devuelve un slice con los numero entre el parametro inicio y el parametro fin sin incluir a este ultimo"""
         if fin <= inicio:
             raise ValueError("el inicio debe ser menor al fin")
         resultado = []
@@ -164,6 +167,7 @@ class BTree(object):
         return resultado
 
     def _buscar_hijos_compatibles(self,inicio, fin, nodo, resultado):
+        """este es un metodo auxiliar que sera utilizado en get_Slice"""
         nueva_lista = []
         if not nodo.hoja:
             i = 0
