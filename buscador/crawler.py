@@ -141,17 +141,20 @@ class Crawler(object):
         self.direcciones_procesadas = set()
         self.direcciones_recorridas = []
         # Restore the previously state.
-        with open(self.archivo_log, "r") as log:
-            for linea in log:
-                palabras = linea.split()
-                if len(palabras) == 3:
-                    self.direcciones_procesadas.add(palabras[0])
-                    self.direcciones_recorridas.append(palabras[0])
-                elif len(palabras) == 4 and palabras[1] == "completa":
-                    if self.direcciones_recorridas[-1] == palabras[0]:
-                        self.direcciones_recorridas.pop()
-                    else:
-                        raise ValueError("Archivo de log %s corrupto" % self.archivo_log)
+        try:
+            with open(self.archivo_log, "r") as log:
+                for linea in log:
+                    palabras = linea.split()
+                    if len(palabras) == 3:
+                        self.direcciones_procesadas.add(palabras[0])
+                        self.direcciones_recorridas.append(palabras[0])
+                    elif len(palabras) == 4 and palabras[1] == "completa":
+                        if self.direcciones_recorridas[-1] == palabras[0]:
+                            self.direcciones_recorridas.pop()
+                        else:
+                            raise ValueError("Archivo de log %s corrupto" % self.archivo_log)
+        except FileNotFoundError:
+            pass
 
     def direccion_en_frontera(self, direccion):
         """
