@@ -38,3 +38,8 @@ de comandos:
 ### Módulo `btree`
 Éste es el módulo que contiene la implementación del Árbol B. Sus 
 detalles se encuentran en la Jupiter notebook [`btree.ipynb`](doc\btree.ipynb)
+
+### Módulo `crawler`
+Éste es el módulo que contiene la implementación del Crawler, 
+tomando como base la clase `LinkParser` dada como ejemplo en el 
+enunciado del trabajo. Sus detalles se encuentran en la Jupiter notebook [`crawler.ipynb`](doc\btree.ipynb)
