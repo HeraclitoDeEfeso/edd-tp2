@@ -71,7 +71,7 @@ class Crawler(object):
         self.archivo_log = log
         self.tmin = tmin
         self.direcciones_procesadas = set()
-        self.direcciones_sin_procesar = dominios
+        self.direcciones_sin_procesar = dominios[:]
         self.direcciones_recorridas = []
         self.archivo_modo = "w"
 
@@ -103,15 +103,23 @@ class Crawler(object):
                 tiempo_restante = self.tmin / 1000 - (time.monotonic() - tiempo)
                 if tiempo_restante > 0:
                     time.sleep(tiempo_restante)
-                contenido, enlaces = parser.fetch_page(direccion)
                 logger.info(direccion)
-                self.controlador.procesar_documento(direccion, contenido)
                 self.direcciones_procesadas.add(direccion)
                 self.direcciones_recorridas.append(direccion)
-                self.direcciones_sin_procesar.extend(
-                    filter(self.direccion_no_procesada,
-                           filter(self.direccion_en_frontera,
-                                  map(limpiar_direccion, enlaces))))
+                try:
+                    contenido, enlaces = parser.fetch_page(direccion)
+                except:
+                    # Hubo un problema accediendo a esa página.
+                    # Pudo haber sido la conexion, pero también
+                    # el encode de una redirección que la librería
+                    # de python no maneja.
+                    pass
+                else:
+                    self.controlador.procesar_documento(direccion, contenido)
+                    self.direcciones_sin_procesar.extend(
+                        filter(self.direccion_no_procesada,
+                               filter(self.direccion_en_frontera,
+                                      set(map(limpiar_direccion, enlaces)))))
             else:
                 self.direcciones_sin_procesar.pop()
                 self.direcciones_recorridas.pop()
