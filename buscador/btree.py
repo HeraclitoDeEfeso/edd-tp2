@@ -82,12 +82,7 @@ class BTree(object):
             nodo = nodo.split(new_raiz, palabra)
             self.raiz = new_raiz
         while not nodo.hoja:
-            i = nodo.size - 1  # ultima key
-            while i > 0 and palabra < nodo.keys[i]:
-                i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
-            if palabra >= nodo.keys[i]:
-                i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
-            # proximo sera el nodo que sigue en el camino hasta ser la hoja que contendra la nueva key
+            i = self._encontrar_rama(palabra, nodo) #i sera el nodo que sigue en la rama que lleva a la palabra
             proximo = nodo.hijo[i]
             if proximo._is_full:
                 nodo = proximo.split(nodo, palabra)
@@ -100,16 +95,22 @@ class BTree(object):
         elif documento not in self.get(palabra):
             nodo.hijo[nodo.keys.index(palabra)].append(documento)
 
+    def _encontrar_rama(self,palabra,nodo):
+        """metodo auxiliar para encontrar el hijo que sigue hasta la palabra indicada, no debe usarse en hojas"""
+        i = nodo.size - 1  # ultima key
+        while i > 0 and palabra < nodo.keys[i]:
+            i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
+        if palabra >= nodo.keys[i]:
+            i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
+        return i #i sera el nodo que sigue en la rama que lleva a la palabra
+
+
     def get(self, palabra):
         """este metodo devuelve la lista de aparicion de la key indicada por parametro"""
         nodo = self.raiz
         while not nodo.hoja:
-            i = nodo.size - 1  # ultima key
-            while i > 0 and palabra < nodo.keys[i]:
-                i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
-            if palabra >= nodo.keys[i]:
-                i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
-            nodo = nodo.hijo[i]  # proximo sera el nodo que sigue en la rama que lleva a la palabra
+            i = self._encontrar_rama(palabra, nodo)
+            nodo = nodo.hijo[i]  #sera el nodo que sigue en la rama que lleva a la palabra
         try:  # si es una de las keys devuelvo su lista
             posicion = nodo.keys.index(palabra)
             return (nodo.hijo[posicion])
