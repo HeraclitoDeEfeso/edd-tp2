@@ -40,6 +40,12 @@ de comandos:
 detalles se encuentran en la Jupiter notebook [`btree.ipynb`](doc/btree.ipynb)
 
 ### Módulo `crawler`
-Éste es el módulo que contiene la implementación del Crawler, 
-tomando como base la clase `LinkParser` dada como ejemplo en el 
-enunciado del trabajo. Sus detalles se encuentran en la Jupiter notebook [`crawler.ipynb`](doc/btree.ipynb)
+Éste es el módulo que contiene la implementación del robot encargado de recorrer
+las páginas. Se ha tomado como base la clase `LinkParser` dada como ejemplo en el 
+enunciado del trabajo. Sus detalles se encuentran en la Jupiter notebook
+[`crawler.ipynb`](doc/crawler.ipynb)
+
+### Módulo `search`
+Éste módulo contiene la implementación de una clase `Buscador` encargada de
+exponer una interfaz de alto nivel para las tareas de búsqueda. Sus detalles 
+se encuentran en la Jupiter notebook [`search.ipynb`](doc/search.ipynb)
