@@ -8,12 +8,11 @@ from buscador.inverted_index import Control, Tokenizer
 from buscador.search import Buscador
 
 # Leo el archivo de configuración
-# TODO: agregar la opción del nombre del archivo a la línea de comandos
+# TODO: agregar la opción del nombre del archivo de configuracion a la línea de comandos
 config = ConfigParser()
 config.read("config.ini")
 
 # Se crean los objetos de acuerdo a los valores de configuración
-# TODO: está pendiente el manejo de los índices invertidos de palabras reversas
 try:
     archivo = open("crawler.bin", "rb")
     crawler = load(archivo)
@@ -42,13 +41,17 @@ while True:
         if input("\nDesea realizar una búsqueda [S/N] ?  ").lower() == "s":
             patrones = input(
                 "\nIngrese una lista palabras que la página debe contener, separadas por espacio.\n").split()
-            documentos = reduce(lambda docs, patron: buscador.busqueda_disjuntiva(patron, docs),
-                                patrones[:-1],
-                                buscador.buscar(patrones[-1]))
-            if documentos:
-                print("", *[control.documentos[doc] for doc in documentos], sep="\n")
+            try:
+                documentos = reduce(lambda docs, patron: buscador.busqueda_disjuntiva(patron, docs),
+                                    patrones[:-1],
+                                    buscador.buscar(patrones[-1]))
+            except ValueError as e:
+                print("\n", e)
             else:
-                print("\nNo se encontraron documentos con esa palabra")
+                if documentos:
+                    print("", *[control.documentos[doc] for doc in documentos], sep="\n")
+                else:
+                    print("\nNo se encontraron documentos con esa palabra")
         else:
             break
     if input("\nDesea salir de la aplicación [S/N] ?  ").lower() == "s":
