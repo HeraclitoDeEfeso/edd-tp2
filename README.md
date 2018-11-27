@@ -49,3 +49,7 @@ enunciado del trabajo. Sus detalles se encuentran en la Jupiter notebook
 Éste módulo contiene la implementación de una clase `Buscador` encargada de
 exponer una interfaz de alto nivel para las tareas de búsqueda. Sus detalles 
 se encuentran en la Jupiter notebook [`search.ipynb`](doc/search.ipynb)
+
+### Módulo `inverted_index`
+Éste módulo contiene la implementación de las clases `Control`, `Tokenizer` 
+e `Indexer` encargadas de modelar la infraestructura [MapReduce](http://static.googleusercontent.com/media/research.google.com/es/us/archive/mapreduce-osdi04.pdf).
