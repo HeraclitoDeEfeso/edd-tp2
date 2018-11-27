@@ -4,146 +4,111 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>56</x>
-      <y>161</y>
-      <w>182</w>
-      <h>105</h>
+      <x>105</x>
+      <y>175</y>
+      <w>189</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>Crawler
 --
 controlador: Control
-dominios: Direccion[1..n]
-direcciones_procesadas: Direccion[0..*]
-direcciones_sin_procesar: Direccion[1..*]
+dominios: str[1..n]
+direcciones_procesadas: str[0..*]
+direcciones_sin_procesar: str[0..*]
+direcciones_recorridas: str[0..*]
+archivo_log: str
+archivo_modo: str
+tmin: int
+salir: bool
 --
-Crawler(Control, Direccion[1..n])
+Crawler(Control, str[1..n], log: str, tmin: int)
 --
-detener(): None
-continuar(): None</panel_attributes>
+iniciar(): None
+direccion_en_frontera(str): bool
+direccion_no_procesada(str): bool
+ __getstate__(): dict
+ __setstate__(dict): None
+ __salir__(): None</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>371</x>
-      <y>161</y>
-      <w>203</w>
-      <h>105</h>
+      <x>350</x>
+      <y>252</y>
+      <w>259</w>
+      <h>133</h>
     </coordinates>
     <panel_attributes>Control
 --
 map: Tokenizer[1..n]
 reduce: Indexer[1..m]
-documentos: Documento[0..*]
-documentos_sin_procesar: Documento[0..*]
+indices_reversos: Indexer[1..m]
+documentos: str[0..*]
 --
-Control(Tokenizer[1..n], Indexer[1..m])
+Control(Tokenizer[1..n], Indexer[1..m], Indexer[1..m])
 --
 procesar_documento(Documento): None
 obtener_indice(str): Indexer
-</panel_attributes>
+obtener_indices(inicio: str, fin: str): Indexer[1..*]
+obtener_indices_reversos(inicio: str, fin: str): Indexer[1..*]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>77</x>
-      <y>322</y>
-      <w>140</w>
-      <h>35</h>
+      <x>686</x>
+      <y>56</y>
+      <w>168</w>
+      <h>119</h>
     </coordinates>
     <panel_attributes>BTree
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>385</x>
-      <y>42</y>
-      <w>168</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>Documento
 --
-direccion: Direccion
-contenido: HTMLPage
+t: int
+raiz: Nodo
 --
-Documento(Direccion, HTMLPage)
-bg=yellow</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>84</x>
-      <y>42</y>
-      <w>133</w>
-      <h>63</h>
-    </coordinates>
-    <panel_attributes>Direccion
+BTree(orden: int)
 --
-url: str
---
-Direccion(str)
---
-es_relativa(Direccion): bool
-bg=yellow</panel_attributes>
+add(str, int): None
+get(str): int[0..*]
+get_Slice(str, str, Nodo[0..*]): str[0..*]
+get_hojas(): Nodo[1..*]
+_buscar_hijos_compatibles(): Nodo[]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>707</x>
-      <y>161</y>
+      <y>217</y>
       <w>266</w>
-      <h>98</h>
+      <h>168</h>
     </coordinates>
     <panel_attributes>Buscador
 --
+_max_caracter: str_
 controlador: Control
 --
 Buscador(Control)
 --
-buscar(str): Documento[0..*]
-busqueda_conjuntiva(str, Documento[0..*]): Documento[0..*]
-busqueda_disjuntiva(str, Documento[0..*]): Documento[0..*]
-busqueda_negativa(str, Documento[0..*]): Documento[0..*]</panel_attributes>
+buscar(patron_palabra: str): int[0..*]
+busqueda_conjuntiva(str, documentos: int[0..*]): int[0..*]
+busqueda_disjuntiva(str, documentos: int[0..*]): int[0..*]
+busqueda_negativa(str, documentos: int[0..*]): int[0..*]
+interpreta_patron(str): str[3]
+buscar_por_patron(str[3]): str[0..*]
+buscar_palabras(inicio: str, fin: str, Indexer): str[0..*]
+buscar_palabras_reversas(inicio: str, fin: str): str[0..*]
+buscar_documentos(palabra: str): int[0..*]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLPackage</id>
     <coordinates>
-      <x>49</x>
-      <y>287</y>
-      <w>196</w>
-      <h>105</h>
-    </coordinates>
-    <panel_attributes>btree
---
-bg=red</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLPackage</id>
-    <coordinates>
-      <x>49</x>
-      <y>126</y>
-      <w>196</w>
-      <h>154</h>
-    </coordinates>
-    <panel_attributes>crawler
---
-bg=blue</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLPackage</id>
-    <coordinates>
-      <x>700</x>
-      <y>126</y>
-      <w>280</w>
-      <h>154</h>
+      <x>672</x>
+      <y>196</y>
+      <w>343</w>
+      <h>196</h>
     </coordinates>
     <panel_attributes>search
 --
@@ -153,157 +118,205 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>462</x>
-      <y>91</y>
-      <w>21</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>546</x>
-      <y>63</y>
-      <w>455</w>
-      <h>280</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;10.0;630.0;10.0;630.0;380.0;180.0;380.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>133</x>
-      <y>98</y>
-      <w>21</w>
-      <h>77</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>147</x>
-      <y>91</y>
-      <w>308</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>420.0;10.0;420.0;40.0;10.0;40.0;10.0;100.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>231</x>
-      <y>203</y>
-      <w>154</w>
+      <x>287</x>
+      <y>315</y>
+      <w>77</w>
       <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>200.0;10.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>490</x>
-      <y>91</y>
-      <w>364</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0;500.0;40.0;500.0;100.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>210</x>
-      <y>63</y>
-      <w>189</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>250.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>273</x>
-      <y>287</y>
-      <w>182</w>
-      <h>35</h>
+      <x>315</x>
+      <y>77</y>
+      <w>140</w>
+      <h>77</h>
     </coordinates>
     <panel_attributes>Tokenizer
 --
-obtener_palabras(HTMLPage): str[0..*]</panel_attributes>
+stemmer: SpanishStemer
+min_long: int
+--
+Tokenizer(min_lon: int)
+--
+obtener_palabras(str): str[0..*]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>483</x>
-      <y>287</y>
-      <w>189</w>
-      <h>84</h>
+      <x>462</x>
+      <y>77</y>
+      <w>196</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>Indexer
 --
 indice: BTree
 --
-agregar_palabra(str, Documento): None
-obtener_documentos(str): Documento[0..*]
-palabras_mayores(str): str[0..*]
-palabras_menores(str): str[0..*]</panel_attributes>
+agregar_palabra(str[0..*], doc: int): None
+obtener_documentos(str): int[0..*]
+buscar_palabras(inicio: str, fin: str): str[0..*]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLPackage</id>
     <coordinates>
-      <x>266</x>
-      <y>126</y>
-      <w>413</w>
-      <h>266</h>
+      <x>308</x>
+      <y>21</y>
+      <w>357</w>
+      <h>371</h>
     </coordinates>
     <panel_attributes>inverted_index
 --
-bg=orange</panel_attributes>
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>602</x>
+      <y>315</y>
+      <w>119</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>651</x>
+      <y>105</y>
+      <w>49</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>105</x>
+      <y>42</y>
+      <w>189</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>LinkParser
+--
+handle_starttag(tag: str, attrs: dict): None
+handle_data(str): None
+fetch_page(str): str, str[0..*]</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLPackage</id>
     <coordinates>
-      <x>28</x>
-      <y>7</y>
-      <w>973</w>
-      <h>406</h>
+      <x>98</x>
+      <y>21</y>
+      <w>203</w>
+      <h>371</h>
     </coordinates>
-    <panel_attributes>buscador
+    <panel_attributes>crawler
 --
-bg=white</panel_attributes>
+bg=blue</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>567</x>
-      <y>203</y>
-      <w>154</w>
-      <h>21</h>
+      <x>196</x>
+      <y>91</y>
+      <w>21</w>
+      <h>98</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;200.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>210</x>
-      <y>329</y>
-      <w>287</w>
-      <h>21</h>
+      <x>483</x>
+      <y>140</y>
+      <w>91</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>390.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;160.0;10.0;50.0;110.0;50.0;110.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>378</x>
+      <y>147</y>
+      <w>105</w>
+      <h>119</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;130.0;40.0;130.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>105</y>
+      <w>42</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=(+)-</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>882</x>
+      <y>42</y>
+      <w>126</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>Nodo
+--
+_t: int
+keys: str[0.._t-1]
+hijo: Nodo[0.._t]
+hoja: bool
+_is_full: bool
+size: int
+--
+Nodo(t: int, hoja: bool)
+--
+agregar_key(str, int): None
+swap(list, int): None
+add_hijo(Nodo): Nodo[1.._t]
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>672</x>
+      <y>21</y>
+      <w>343</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>btree
+--
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>91</x>
+      <y>0</y>
+      <w>931</w>
+      <h>399</h>
+    </coordinates>
+    <panel_attributes>buscador
+--
+bg=yellow</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>
