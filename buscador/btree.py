@@ -20,11 +20,11 @@ class BTree(object):
             if not self.hoja:
                 self.keys.remove(key_medio)
                 # Agrega las keys y los hijos al nodo correcto,el nuevo nodo siempre contendra las keys mas altas
-                nuevo_nodo.hijo = self.hijo[mitad+1:]
-                self.hijo = self.hijo[:mitad+1]
+                nuevo_nodo.hijo = self.hijo[mitad + 1:]
+                self.hijo = self.hijo[:mitad + 1]
             else:
                 nuevo_nodo.hijo = self.hijo[mitad:]
-                self.hijo = self.hijo[:mitad ]
+                self.hijo = self.hijo[:mitad]
             nuevo_nodo.keys = self.keys[mitad:]
             self.keys = self.keys[:mitad]
 
@@ -43,23 +43,23 @@ class BTree(object):
         def size(self):
             return len(self.keys)
 
-        def agregar_key(self, valor,documento):
+        def agregar_key(self, valor, documento):
             self.keys.append(valor)
             self.hijo.append([documento])
-            i = len(self.keys)-1
-            while i >= 1 and self.keys[i] < self.keys[i-1]:
-                self.swap(self.keys,i)
-                self.swap(self.hijo,i)
-                i-=1
+            i = len(self.keys) - 1
+            while i >= 1 and self.keys[i] < self.keys[i - 1]:
+                self.swap(self.keys, i)
+                self.swap(self.hijo, i)
+                i -= 1
 
         def swap(self, lista, indice):
             aux = lista[indice]
-            lista[indice] = lista[indice-1]
-            lista[indice-1] = aux
+            lista[indice] = lista[indice - 1]
+            lista[indice - 1] = aux
 
         def add_hijo(self, nuevo_nodo):
             """agrega un hijo al nodo y ordena a todos los hijos.Devuelve una lista ordenada de los nodos hijos"""
-            i = len(self.hijo) - 1 #ultimo hijo
+            i = len(self.hijo) - 1  # ultimo hijo
             while i >= 0 and self.hijo[i].keys[0] > nuevo_nodo.keys[0]:
                 i -= 1
             return self.hijo[:i + 1] + [nuevo_nodo] + self.hijo[i + 1:]
@@ -69,7 +69,7 @@ class BTree(object):
         self._t = t
         if self._t <= 1:
             raise ValueError("El orden del arbol debe ser 2 o superior")
-        self.raiz = self.Nodo(t,True)
+        self.raiz = self.Nodo(t, True)
 
     def add(self, palabra, documento):
         """Inserta un key con un valor determinado"""
@@ -95,10 +95,10 @@ class BTree(object):
                 nodo = proximo
         if palabra not in nodo.keys:
             # Como spliteamos todos los nodos completos podemos simplemente agregar la key.
-            nodo.agregar_key(palabra,documento)#aca agrega la key y el documento a la lista de aparicion.
+            nodo.agregar_key(palabra, documento)  # aca agrega la key y el documento a la lista de aparicion.
 
         elif documento not in self.get(palabra):
-               nodo.hijo[nodo.keys.index(palabra)].append(documento)
+            nodo.hijo[nodo.keys.index(palabra)].append(documento)
 
     def get(self, palabra):
         """este metodo devuelve la lista de aparicion de la key indicada por parametro"""
@@ -109,12 +109,12 @@ class BTree(object):
                 i -= 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
             if palabra >= nodo.keys[i]:
                 i += 1  # ahora i sera la posicion mayor mas proxima a la nueva key
-            nodo = nodo.hijo[i]# proximo sera el nodo que sigue en la rama que lleva a la palabra
-        try: #si es una de las keys devuelvo su lista
+            nodo = nodo.hijo[i]  # proximo sera el nodo que sigue en la rama que lleva a la palabra
+        try:  # si es una de las keys devuelvo su lista
             posicion = nodo.keys.index(palabra)
-            return(nodo.hijo[posicion])
-        except ValueError as e: #si no es una key digo que no esta
-            return(e) #key is not in list
+            return (nodo.hijo[posicion])
+        except ValueError as e:  # si no es una key digo que no esta
+            return (e)  # key is not in list
 
     def get_hojas(self):
         """este metodo devuelve las hojas separadas por listas que representan cada nodo"""
@@ -130,8 +130,6 @@ class BTree(object):
             este_nivel = prox_nivel
         return hojas
 
-
-
     def _imprimir_arbol(self):
         """imprime una representacion visual por nivel unicamente util para cuequear arbol a simple vista"""
         este_nivel = [self.raiz]
@@ -144,9 +142,7 @@ class BTree(object):
                 output += str(nodo.keys) + " "
             print(output)
             este_nivel = prox_nivel
-            
-            
-            
+
     def get_Slice(self, inicio, fin, por_revisar=[]):
         """devuelve un slice con los numero entre el parametro inicio y el parametro fin sin incluir a este ultimo"""
         if fin <= inicio:
@@ -154,27 +150,27 @@ class BTree(object):
         resultado = []
         nuevos_hijos = []
         if len(por_revisar) == 0:
-            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, self.raiz,resultado)
+            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, self.raiz, resultado)
             if len(nuevos_hijos) > 0:
                 for nv in nuevos_hijos:
                     por_revisar.append(nv)
         while len(por_revisar) > 0:
-            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, por_revisar[0],resultado)
+            nuevos_hijos = self._buscar_hijos_compatibles(inicio, fin, por_revisar[0], resultado)
             por_revisar.pop(0)
             if len(nuevos_hijos) > 0:
                 for nv in nuevos_hijos:
-                        por_revisar.append(nv)
+                    por_revisar.append(nv)
         return resultado
 
-    def _buscar_hijos_compatibles(self,inicio, fin, nodo, resultado):
+    def _buscar_hijos_compatibles(self, inicio, fin, nodo, resultado):
         """este es un metodo auxiliar que sera utilizado en get_Slice"""
         nueva_lista = []
         if not nodo.hoja:
             i = 0
             while i < nodo.size and inicio > nodo.keys[i]:
                 i += 1  # posicion de la nueva key o la mas grande de las que son menores a la nueva key
-            for posicion in range(i, nodo.size+1):
-                    nueva_lista.append(nodo.hijo[posicion])
+            for posicion in range(i, nodo.size + 1):
+                nueva_lista.append(nodo.hijo[posicion])
         else:
             for key in nodo.keys:
                 if inicio <= key < fin:
