@@ -10,7 +10,7 @@ class Tokenizer(object):
     documentos recuperados por el `Crawler`
     """
 
-    def __init__(self, min_long = 5):
+    def __init__(self, min_long=5):
         """
         Para inicializar un `Tokenizer` es necesario saber el tamaño mínimo de caracteres
         `min_long`. que constituyen una palabra válidad
@@ -60,27 +60,13 @@ class Indexer(object):
         :return: un lista de números como referencias a documentos
         """
         resultado = self.indice.get(palabra)
+        # TODO: El árbol B debería arrojar una excepción con `raice` no devolver el objeto excepción
         if isinstance(resultado, ValueError):
             return []
         return resultado
 
-    def palabras_mayores(self, palabra):
-        """
-        Este método devuelde todas las palabras que se encuentran en el índice
-        y que proceden a `palabra` en orden alfabético
-        :param palabra: una cadena de caracteres
-        :return: una lista con cadenas de caracters que representan cada palabra
-        """
-        pass
-
-    def palabras_menores(self, palabra):
-        """
-        Este método devuelde todas las palabras que se encuentran en el índice
-        y que preceden a `palabra` en orden alfabético
-        :param palabra: una cadena de caracteres
-        :return: una lista con cadenas de caracters que representan cada palabra
-        """
-        pass
+    def buscar_palabras(self, inicio, fin):
+        return self.indice.get_Slice(inicio, fin)
 
 
 class Control(object):
@@ -92,11 +78,10 @@ class Control(object):
     los `Indexer`
     """
 
-    def __init__(self, separadores=None, indexadores=None):
-        # TODO: Particiones e índices reversos
-        # Mientras no implementemos las particiones utilizamos un tokenizer y un índice
+    def __init__(self, separadores=None, indexadores=None, indices_reversos=None):
         self.map = separadores if separadores else Tokenizer()
         self.reduce = indexadores if indexadores else Indexer()
+        self.indices_reversos = indices_reversos if indices_reversos else Indexer()
         self.documentos = []
 
     def procesar_documento(self, direccion, contenido):
@@ -108,15 +93,39 @@ class Control(object):
         :param contenido: una cadena de caracteres
         """
         self.documentos.append(direccion)
-        self.reduce.agregar_palabras(self.map.obtener_palabras(contenido), len(self.documentos) - 1)
+        documento = len(self.documentos) - 1
+        palabras = self.map.obtener_palabras(contenido)
+        self.reduce.agregar_palabras(palabras, documento)
+        self.indices_reversos.agregar_palabras([palabra[::-1] for palabra in palabras], documento)
 
     def obtener_indice(self, palabra):
         """
-        Este método es utilizado por el `Buscador` para
-        obtener el `Indexer` que debiera mantener el
-        índice invertido que contiene la `palabra`
-        :param palabra: un string con la palabra indexada
-        :return: el `Indexer` que mantiene el índice invertido
+        Éste método devuelve el indices que deberían contener la `palabra` según como se haya
+        particionado el conjunto de índices
+        :param palabra: una cadena de caracteres
+        :return: un `Indexer`
         """
-        # Mientras no tengamos implementadas las particiones usamos un único índice
+        # TODO: mientras no se implementen las particiones trabajamos con índices únicos
         return self.reduce
+
+    def obtener_indices(self, inicio, final):
+        """
+        Éste método devuelve todos los indices en que se deberían haber particionado las palabras
+        en la palabra `inicio` y la palabra `final` en orden alfabético.
+        :param inicio: una cadena de caracteres
+        :param final: una cadena de caracteres
+        :return: una lista de `Indexer`
+        """
+        # TODO: mientras no se implementen las particiones trabajamos con índices únicos
+        return [self.reduce]
+
+    def obtener_indices_reversos(self, inicio, final):
+        """
+        Éste método devuelve todos los indices en que se deberían haber particionado las palabras
+        invertidas entre la palabra `inicio` y la palabra `final` en orden alfabético.
+        :param inicio: una cadena de caracteres
+        :param final: una cadena de caracteres
+        :return: una lista de `Indexer`
+        """
+        # TODO: mientras no se implementen las particiones trabajamos con índices únicos
+        return [self.indices_reversos]
